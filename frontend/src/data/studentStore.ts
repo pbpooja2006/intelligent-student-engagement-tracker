@@ -73,7 +73,14 @@ export const ensureLoaded = () => {
 
 export const addStudent = async (payload: Omit<Student, "id">) => {
   const student = await apiCreateStudent(payload);
-  await refresh();
+  // Immediate UI update for better responsiveness
+  const nextStudents = [student, ...state.students];
+  setState({
+    students: nextStudents,
+    stats: computeStats(nextStudents),
+  });
+  // Revalidate in background to keep in sync with DB
+  void refresh();
   return student;
 };
 
