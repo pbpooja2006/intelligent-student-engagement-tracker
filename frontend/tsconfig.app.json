@@ -9,7 +9,6 @@
       "DOM.Iterable"
     ],
     "baseUrl": ".",
-    "ignoreDeprecations": "6.0",
     "module": "ESNext",
     "moduleDetection": "force",
     "moduleResolution": "bundler",

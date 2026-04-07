@@ -1,17 +1,12 @@
-import { useSyncExternalStore, useEffect } from 'react';
-import { getStudents, getNotifications, getClassificationStats, subscribe, getMeta, loadAll } from '@/data/mockData';
+import { useEffect, useSyncExternalStore } from "react";
+import { ensureLoaded, getSnapshot, subscribe } from "@/data/studentStore";
 
 export function useStudentStore() {
-  const students = useSyncExternalStore(subscribe, getStudents, getStudents);
-  const notifications = useSyncExternalStore(subscribe, getNotifications, getNotifications);
-  const stats = useSyncExternalStore(subscribe, getClassificationStats, getClassificationStats);
-  const meta = useSyncExternalStore(subscribe, getMeta, getMeta);
+  const snapshot = useSyncExternalStore(subscribe, getSnapshot, getSnapshot);
 
   useEffect(() => {
-    if (!meta.initialized) {
-      loadAll();
-    }
-  }, [meta.initialized]);
+    ensureLoaded();
+  }, []);
 
-  return { students, notifications, stats, loading: meta.loading, error: meta.error };
+  return snapshot;
 }

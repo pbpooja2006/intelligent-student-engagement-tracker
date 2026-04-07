@@ -1,10 +1,10 @@
 import { useParams, useNavigate } from "react-router-dom";
 import { ArrowLeft, Mail, Phone, Github, Linkedin, Award, BookOpen, Target, ExternalLink } from "lucide-react";
 import { Button } from "@/components/ui/button";
-import { classificationLabels } from "@/data/mockData";
+import { classificationLabels } from "@/data/constants";
+import { useStudentStore } from "@/hooks/useStudentStore";
 import { BarChart, Bar, LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, Legend } from "recharts";
 import DeleteStudentDialog from "@/components/DeleteStudentDialog";
-import { useStudentStore } from "@/hooks/useStudentStore";
 
 const engagementBadge: Record<string, string> = {
   High: "bg-committed text-committed-foreground",
@@ -21,22 +21,13 @@ const classificationBadge: Record<string, string> = {
 const StudentProfile = () => {
   const { studentId } = useParams<{ studentId: string }>();
   const navigate = useNavigate();
-  const { students, loading, error } = useStudentStore();
-  const student = students.find((s) => s.id === studentId);
+  const { students, loading } = useStudentStore();
+  const student = students.find((s) => s.id === (studentId || ""));
 
   if (loading) {
     return (
       <div className="flex flex-col items-center justify-center py-20">
         <p className="text-lg text-muted-foreground">Loading student...</p>
-      </div>
-    );
-  }
-
-  if (error) {
-    return (
-      <div className="flex flex-col items-center justify-center py-20">
-        <p className="text-lg text-destructive">{error}</p>
-        <Button variant="ghost" className="mt-4" onClick={() => navigate(-1)}>Go back</Button>
       </div>
     );
   }

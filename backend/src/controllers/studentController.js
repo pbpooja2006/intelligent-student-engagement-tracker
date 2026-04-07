@@ -1,5 +1,7 @@
 import * as Student from '../models/studentModel.js';
 
+const isValidEmail = (email) => /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email);
+
 export const getStudents = async (req, res) => {
   try {
     const students = await Student.getStudents(req.query || {});
@@ -29,9 +31,15 @@ export const createStudent = async (req, res) => {
     if (missing.length > 0) {
       return res.status(400).json({ error: `Missing required fields: ${missing.join(', ')}` });
     }
+    if (!isValidEmail(payload.email)) {
+      return res.status(400).json({ error: 'Invalid email format' });
+    }
     const student = await Student.createStudent(payload);
     res.status(201).json({ data: student });
   } catch (err) {
+    if (err && err.code === 'ER_DUP_ENTRY') {
+      return res.status(409).json({ error: 'Student already exists' });
+    }
     console.error(err);
     res.status(500).json({ error: 'Failed to create student' });
   }

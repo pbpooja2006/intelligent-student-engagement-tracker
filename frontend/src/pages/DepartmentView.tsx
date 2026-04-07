@@ -1,14 +1,14 @@
 import { useParams, useNavigate } from "react-router-dom";
 import { ArrowLeft, Calendar } from "lucide-react";
 import { Button } from "@/components/ui/button";
-import { years, classificationLabels } from "@/data/mockData";
+import { years, classificationLabels } from "@/data/constants";
 import { useStudentStore } from "@/hooks/useStudentStore";
 
 const DepartmentView = () => {
   const { classification, department } = useParams<{ classification: string; department: string }>();
   const navigate = useNavigate();
   const decodedDept = decodeURIComponent(department || "");
-  const { students, loading, error } = useStudentStore();
+  const { students } = useStudentStore();
 
   const filtered = classification === "all"
     ? students.filter((s) => s.department === decodedDept)
@@ -32,9 +32,6 @@ const DepartmentView = () => {
           </p>
         </div>
       </div>
-
-      {loading && <p className="text-sm text-muted-foreground">Loading students...</p>}
-      {error && <p className="text-sm text-destructive">{error}</p>}
 
       <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-4">
         {yearCounts.map(({ year, count }) => (

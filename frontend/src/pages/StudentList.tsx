@@ -18,7 +18,7 @@ const StudentList = () => {
   const [search, setSearch] = useState("");
   const decodedDept = decodeURIComponent(department || "");
   const decodedYear = decodeURIComponent(year || "");
-  const { students: allStudents, loading, error } = useStudentStore();
+  const { students: allStudents } = useStudentStore();
 
   let students = allStudents.filter((s) => s.department === decodedDept && s.year === decodedYear);
   if (classification !== "all") {
@@ -40,18 +40,12 @@ const StudentList = () => {
         </div>
       </div>
 
-      {loading && <p className="text-sm text-muted-foreground">Loading students...</p>}
-      {error && <p className="text-sm text-destructive">{error}</p>}
-
       <div className="relative max-w-sm">
         <Search className="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-muted-foreground" />
         <Input placeholder="Search by name or roll no..." className="pl-10" value={search} onChange={(e) => setSearch(e.target.value)} />
       </div>
 
       <div className="space-y-2">
-        {students.length === 0 && !loading && (
-          <p className="text-sm text-muted-foreground">No students found.</p>
-        )}
         {students.map((student) => (
           <div
             key={student.id}
