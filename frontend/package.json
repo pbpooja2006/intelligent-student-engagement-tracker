@@ -4,6 +4,7 @@
   "description": "The **Student Engagement Tracker** is an full-stack web application designed to monitor, analyze, and improve student performance and engagement in an academic environment.",
   "main": "index.js",
   "dependencies": {
+    "@vitejs/plugin-react-swc": "^4.3.0",
     "abab": "^2.0.6",
     "acorn": "^8.16.0",
     "acorn-globals": "^7.0.1",
