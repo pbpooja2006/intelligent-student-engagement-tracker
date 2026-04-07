@@ -4,6 +4,9 @@ import API_BASE_URL from "@/api/config";
 const buildUrl = (path: string) => {
   const baseRaw = API_BASE_URL.replace(/\/$/, "");
   const next = path.startsWith("/") ? path : `/${path}`;
+  if (baseRaw.endsWith("/api") && next.startsWith("/api/")) {
+    return `${baseRaw}${next.slice(4)}`;
+  }
   return `${baseRaw}${next}`;
 };
 
