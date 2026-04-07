@@ -32,17 +32,17 @@ export const getSnapshot = () => state;
 
 const getToken = () => {
   if (typeof window === "undefined") return null;
-  return window.localStorage.getItem("auth_token");
+  return window.localStorage.getItem("token");
 };
 
 const setToken = (token: string) => {
   if (typeof window === "undefined") return;
-  window.localStorage.setItem("auth_token", token);
+  window.localStorage.setItem("token", token);
 };
 
 export const clearToken = () => {
   if (typeof window === "undefined") return;
-  window.localStorage.removeItem("auth_token");
+  window.localStorage.removeItem("token");
 };
 
 export const loadProfile = async () => {

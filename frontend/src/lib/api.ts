@@ -1,20 +1,15 @@
 import type { AuthUser, Notification, Student } from "@/data/types";
-
-const API_BASE = (import.meta.env.VITE_API_URL as string | undefined) ?? "http://localhost:4000";
+import API_BASE_URL from "@/api/config";
 
 const buildUrl = (path: string) => {
-  const baseRaw = API_BASE.replace(/\/$/, "");
+  const baseRaw = API_BASE_URL.replace(/\/$/, "");
   const next = path.startsWith("/") ? path : `/${path}`;
-  // Avoid double /api when VITE_API_URL already includes /api
-  if (baseRaw.endsWith("/api") && next.startsWith("/api/")) {
-    return `${baseRaw}${next.slice(4)}`;
-  }
   return `${baseRaw}${next}`;
 };
 
 const getAuthHeader = () => {
   if (typeof window === "undefined") return {};
-  const token = window.localStorage.getItem("auth_token");
+  const token = window.localStorage.getItem("token");
   return token ? { Authorization: `Bearer ${token}` } : {};
 };
 
