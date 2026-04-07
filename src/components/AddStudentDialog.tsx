@@ -13,6 +13,7 @@ const wardens = ["Mr. P. Rajan", "Ms. S. Devi", "Mr. K. Mohan", "Ms. L. Priya"];
 
 const AddStudentDialog = () => {
   const [open, setOpen] = useState(false);
+  const [submitting, setSubmitting] = useState(false);
   const [form, setForm] = useState({
     name: "", department: departments[0], year: years[0],
     classification: "intermediate" as Classification,
@@ -21,7 +22,7 @@ const AddStudentDialog = () => {
     email: "", phone: "", rollNo: "",
   });
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     if (!form.name.trim() || !form.email.trim() || !form.rollNo.trim()) {
       toast({ title: "Error", description: "Please fill all required fields", variant: "destructive" });
@@ -32,29 +33,40 @@ const AddStudentDialog = () => {
     const baseGpa = form.classification === "advanced" ? 8.5 : form.classification === "intermediate" ? 7.0 : 5.5;
     const semCount = parseInt(form.year) * 2 || 2;
 
-    addStudent({
-      ...form,
-      engagementLevel,
-      attendance: { percentage: 75, presentDays: 120, totalDays: 160, leaveCount: 5 },
-      academics: {
-        semesters: Array.from({ length: semCount }, (_, i) => ({ sem: i + 1, sgpa: baseGpa + (Math.random() - 0.5) })),
-        cgpa: baseGpa,
-      },
-      platforms: { github: "", leetcode: "", linkedin: "" },
-      skills: [],
-      trainings: [],
-      skillsToLearn: [],
-      rewardPoints: 0,
-      activityPoints: 0,
-    });
+    setSubmitting(true);
+    try {
+      await addStudent({
+        ...form,
+        engagementLevel,
+        attendance: { percentage: 75, presentDays: 120, totalDays: 160, leaveCount: 5 },
+        academics: {
+          semesters: Array.from({ length: semCount }, (_, i) => ({ sem: i + 1, sgpa: baseGpa + (Math.random() - 0.5) })),
+          cgpa: baseGpa,
+        },
+        platforms: { github: "", leetcode: "", linkedin: "" },
+        skills: [],
+        trainings: [],
+        skillsToLearn: [],
+        rewardPoints: 0,
+        activityPoints: 0,
+      });
 
-    toast({
-      title: "Student Added Successfully",
-      description: `Student added successfully to ${classificationLabels[form.classification]}`,
-    });
+      toast({
+        title: "Student Added Successfully",
+        description: `Student added successfully to ${classificationLabels[form.classification]}`,
+      });
 
-    setForm({ name: "", department: departments[0], year: years[0], classification: "intermediate", mentor: mentors[0], warden: wardens[0], residenceType: "Hosteller", email: "", phone: "", rollNo: "" });
-    setOpen(false);
+      setForm({ name: "", department: departments[0], year: years[0], classification: "intermediate", mentor: mentors[0], warden: wardens[0], residenceType: "Hosteller", email: "", phone: "", rollNo: "" });
+      setOpen(false);
+    } catch (err) {
+      toast({
+        title: "Failed to add student",
+        description: err instanceof Error ? err.message : "Please try again",
+        variant: "destructive"
+      });
+    } finally {
+      setSubmitting(false);
+    }
   };
 
   const updateField = (field: string, value: string) => setForm(prev => ({ ...prev, [field]: value }));
@@ -102,7 +114,7 @@ const AddStudentDialog = () => {
             </div>
             <div>
               <Label>Classification</Label>
-              <Select value={form.classification} onValueChange={v => updateField("classification", v)}>
+              <Select value={form.classification} onValueChange={v => updateField("classification", v as Classification)}>
                 <SelectTrigger><SelectValue /></SelectTrigger>
                 <SelectContent>
                   <SelectItem value="advanced">Advanced</SelectItem>
@@ -136,7 +148,9 @@ const AddStudentDialog = () => {
               </Select>
             </div>
           </div>
-          <Button type="submit" className="w-full">Add Student</Button>
+          <Button type="submit" className="w-full" disabled={submitting}>
+            {submitting ? "Adding..." : "Add Student"}
+          </Button>
         </form>
       </DialogContent>
     </Dialog>

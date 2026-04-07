@@ -1,37 +1,49 @@
 import { useNavigate } from "react-router-dom";
-import { User, LogOut, Users, AlertTriangle, TrendingDown } from "lucide-react";
+import { LogOut, Users, AlertTriangle, TrendingDown } from "lucide-react";
 import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
 import { Button } from "@/components/ui/button";
-import { educatorProfile, getMentees, getClassificationStats } from "@/data/mockData";
 import { useStudentStore } from "@/hooks/useStudentStore";
+import { useAuth } from "@/context/AuthContext";
 
 const EducatorProfileCard = () => {
   const navigate = useNavigate();
-  const { stats } = useStudentStore();
-  const mentees = getMentees(educatorProfile.mentorId);
-  const inactiveMentees = mentees.filter(s => s.classification === "foundational");
-  const lowPerformers = mentees.filter(s => s.academics.cgpa < 6);
+  const { user, logout } = useAuth();
+  const { students, stats } = useStudentStore();
+
+  const mentorKey = user?.mentorId || user?.name || "";
+  const mentees = mentorKey ? students.filter((s) => s.mentor === mentorKey) : [];
+  const inactiveMentees = mentees.filter((s) => s.classification === "foundational");
+  const lowPerformers = mentees.filter((s) => s.academics.cgpa < 6);
+
+  const profile = {
+    name: user?.name || "Educator",
+    email: user?.email || "educator@university.edu",
+    department: user?.department || "",
+    designation: user?.designation || "Educator",
+    isMentor: Boolean(mentorKey),
+    mentorId: mentorKey
+  };
 
   return (
     <Popover>
       <PopoverTrigger asChild>
         <button className="flex items-center gap-2 rounded-lg px-2 py-1 hover:bg-muted transition-colors">
           <div className="h-8 w-8 rounded-full bg-primary flex items-center justify-center text-primary-foreground text-sm font-semibold">
-            {educatorProfile.name.charAt(0)}
+            {profile.name.charAt(0)}
           </div>
-          <span className="text-sm font-medium text-foreground hidden lg:inline">{educatorProfile.name.split(" ").slice(-1)[0]}</span>
+          <span className="text-sm font-medium text-foreground hidden lg:inline">{profile.name.split(" ").slice(-1)[0]}</span>
         </button>
       </PopoverTrigger>
       <PopoverContent className="w-80 p-0" align="end">
         <div className="border-b border-border p-4">
           <div className="flex items-center gap-3">
             <div className="h-12 w-12 rounded-full bg-primary flex items-center justify-center text-primary-foreground text-lg font-bold">
-              {educatorProfile.name.split(" ").map(n => n[0]).join("")}
+              {profile.name.split(" ").map((n) => n[0]).join("")}
             </div>
             <div>
-              <p className="font-semibold text-foreground">{educatorProfile.name}</p>
-              <p className="text-xs text-muted-foreground">{educatorProfile.designation}</p>
-              <p className="text-xs text-muted-foreground">{educatorProfile.email}</p>
+              <p className="font-semibold text-foreground">{profile.name}</p>
+              <p className="text-xs text-muted-foreground">{profile.designation}</p>
+              <p className="text-xs text-muted-foreground">{profile.email}</p>
             </div>
           </div>
         </div>
@@ -54,13 +66,13 @@ const EducatorProfileCard = () => {
           </div>
         </div>
 
-        {educatorProfile.isMentor && (
+        {profile.isMentor && (
           <div className="border-b border-border p-4">
             <h4 className="text-xs font-semibold text-muted-foreground uppercase mb-2">
               <Users className="h-3 w-3 inline mr-1" /> Mentees ({mentees.length})
             </h4>
             <div className="max-h-40 overflow-y-auto space-y-1">
-              {mentees.slice(0, 25).map(s => {
+              {mentees.slice(0, 25).map((s) => {
                 const isInactive = s.classification === "foundational";
                 const isLow = s.academics.cgpa < 6;
                 return (
@@ -94,7 +106,14 @@ const EducatorProfileCard = () => {
         )}
 
         <div className="p-2">
-          <Button variant="ghost" className="w-full justify-start text-destructive hover:text-destructive gap-2" onClick={() => navigate("/login")}>
+          <Button
+            variant="ghost"
+            className="w-full justify-start text-destructive hover:text-destructive gap-2"
+            onClick={() => {
+              logout();
+              navigate("/login");
+            }}
+          >
             <LogOut className="h-4 w-4" /> Sign Out
           </Button>
         </div>

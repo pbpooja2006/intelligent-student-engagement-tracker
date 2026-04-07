@@ -4,14 +4,29 @@ import { GraduationCap, Mail, Lock, User, Eye, EyeOff } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
+import { useAuth } from "@/context/AuthContext";
+import { toast } from "@/hooks/use-toast";
 
 const Signup = () => {
   const navigate = useNavigate();
+  const { register, loading } = useAuth();
   const [showPassword, setShowPassword] = useState(false);
+  const [name, setName] = useState("");
+  const [email, setEmail] = useState("");
+  const [password, setPassword] = useState("");
 
-  const handleSignup = (e: React.FormEvent) => {
+  const handleSignup = async (e: React.FormEvent) => {
     e.preventDefault();
-    navigate("/dashboard");
+    try {
+      await register({ name, email, password });
+      navigate("/dashboard");
+    } catch (err) {
+      toast({
+        title: "Signup failed",
+        description: err instanceof Error ? err.message : "Please try again",
+        variant: "destructive"
+      });
+    }
   };
 
   return (
@@ -49,7 +64,7 @@ const Signup = () => {
               <Label htmlFor="name">Full Name</Label>
               <div className="relative">
                 <User className="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-muted-foreground" />
-                <Input id="name" placeholder="Dr. John Doe" className="pl-10" />
+                <Input id="name" placeholder="Dr. John Doe" className="pl-10" value={name} onChange={(e) => setName(e.target.value)} />
               </div>
             </div>
 
@@ -57,7 +72,7 @@ const Signup = () => {
               <Label htmlFor="email">Email</Label>
               <div className="relative">
                 <Mail className="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-muted-foreground" />
-                <Input id="email" type="email" placeholder="educator@university.edu" className="pl-10" />
+                <Input id="email" type="email" placeholder="educator@university.edu" className="pl-10" value={email} onChange={(e) => setEmail(e.target.value)} />
               </div>
             </div>
 
@@ -70,6 +85,8 @@ const Signup = () => {
                   type={showPassword ? "text" : "password"}
                   placeholder="••••••••"
                   className="pl-10 pr-10"
+                  value={password}
+                  onChange={(e) => setPassword(e.target.value)}
                 />
                 <button
                   type="button"
@@ -81,8 +98,8 @@ const Signup = () => {
               </div>
             </div>
 
-            <Button type="submit" className="w-full h-11 font-semibold">
-              Create Account
+            <Button type="submit" className="w-full h-11 font-semibold" disabled={loading}>
+              {loading ? "Creating..." : "Create Account"}
             </Button>
           </form>
 

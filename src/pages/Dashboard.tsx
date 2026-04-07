@@ -1,6 +1,5 @@
 import { useNavigate } from "react-router-dom";
 import { Users, UserCheck, UserMinus, UserX, AlertTriangle, TrendingUp, Award } from "lucide-react";
-import { getStudentsByClassification, classificationLabels } from "@/data/mockData";
 import { useStudentStore } from "@/hooks/useStudentStore";
 import AddStudentDialog from "@/components/AddStudentDialog";
 
@@ -49,8 +48,8 @@ const classificationCards = [
 
 const Dashboard = () => {
   const navigate = useNavigate();
-  const { stats } = useStudentStore();
-  const foundationalStudents = getStudentsByClassification("foundational").slice(0, 5);
+  const { stats, students, loading, error } = useStudentStore();
+  const foundationalStudents = students.filter((s) => s.classification === "foundational").slice(0, 5);
 
   return (
     <div className="space-y-8">
@@ -61,6 +60,9 @@ const Dashboard = () => {
         </div>
         <AddStudentDialog />
       </div>
+
+      {loading && <p className="text-sm text-muted-foreground">Loading student data...</p>}
+      {error && <p className="text-sm text-destructive">{error}</p>}
 
       <div className="grid grid-cols-1 gap-3 sm:grid-cols-2 md:grid-cols-4">
         <div className="flex items-center gap-3 rounded-xl border border-border bg-card p-4 shadow-card">
@@ -135,6 +137,9 @@ const Dashboard = () => {
           <h3 className="font-display text-lg font-semibold text-foreground">Students Requiring Attention</h3>
         </div>
         <div className="space-y-3">
+          {foundationalStudents.length === 0 && (
+            <p className="text-sm text-muted-foreground">No students require attention yet.</p>
+          )}
           {foundationalStudents.map((student) => (
             <div
               key={student.id}

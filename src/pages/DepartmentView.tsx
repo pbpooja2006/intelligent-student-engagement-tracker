@@ -8,7 +8,7 @@ const DepartmentView = () => {
   const { classification, department } = useParams<{ classification: string; department: string }>();
   const navigate = useNavigate();
   const decodedDept = decodeURIComponent(department || "");
-  const { students } = useStudentStore();
+  const { students, loading, error } = useStudentStore();
 
   const filtered = classification === "all"
     ? students.filter((s) => s.department === decodedDept)
@@ -32,6 +32,9 @@ const DepartmentView = () => {
           </p>
         </div>
       </div>
+
+      {loading && <p className="text-sm text-muted-foreground">Loading students...</p>}
+      {error && <p className="text-sm text-destructive">{error}</p>}
 
       <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-4">
         {yearCounts.map(({ year, count }) => (

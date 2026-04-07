@@ -4,6 +4,7 @@ import { Trash2 } from "lucide-react";
 import { deleteStudent } from "@/data/mockData";
 import { toast } from "@/hooks/use-toast";
 import { useNavigate } from "react-router-dom";
+import { useState } from "react";
 
 interface Props {
   studentId: string;
@@ -13,14 +14,26 @@ interface Props {
 
 const DeleteStudentDialog = ({ studentId, studentName, variant = "icon" }: Props) => {
   const navigate = useNavigate();
+  const [deleting, setDeleting] = useState(false);
 
-  const handleDelete = () => {
-    deleteStudent(studentId);
-    toast({
-      title: "Student Removed",
-      description: "Student removed successfully",
-    });
-    navigate(-1);
+  const handleDelete = async () => {
+    setDeleting(true);
+    try {
+      await deleteStudent(studentId);
+      toast({
+        title: "Student Removed",
+        description: "Student removed successfully",
+      });
+      navigate(-1);
+    } catch (err) {
+      toast({
+        title: "Delete failed",
+        description: err instanceof Error ? err.message : "Please try again",
+        variant: "destructive"
+      });
+    } finally {
+      setDeleting(false);
+    }
   };
 
   return (
@@ -45,8 +58,8 @@ const DeleteStudentDialog = ({ studentId, studentName, variant = "icon" }: Props
         </AlertDialogHeader>
         <AlertDialogFooter>
           <AlertDialogCancel>Cancel</AlertDialogCancel>
-          <AlertDialogAction onClick={handleDelete} className="bg-destructive text-destructive-foreground hover:bg-destructive/90">
-            Delete
+          <AlertDialogAction onClick={handleDelete} className="bg-destructive text-destructive-foreground hover:bg-destructive/90" disabled={deleting}>
+            {deleting ? "Deleting..." : "Delete"}
           </AlertDialogAction>
         </AlertDialogFooter>
       </AlertDialogContent>

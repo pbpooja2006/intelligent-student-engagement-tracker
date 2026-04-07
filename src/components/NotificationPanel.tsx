@@ -4,10 +4,43 @@ import { Button } from "@/components/ui/button";
 import { useStudentStore } from "@/hooks/useStudentStore";
 import { markNotificationRead, markAllNotificationsRead } from "@/data/mockData";
 import { formatDistanceToNow } from "date-fns";
+import { useState } from "react";
+import { toast } from "@/hooks/use-toast";
 
 const NotificationPanel = () => {
-  const { notifications } = useStudentStore();
+  const { notifications, loading, error } = useStudentStore();
+  const [updating, setUpdating] = useState(false);
   const unreadCount = notifications.filter(n => !n.read).length;
+
+  const handleMarkAll = async () => {
+    setUpdating(true);
+    try {
+      await markAllNotificationsRead();
+    } catch (err) {
+      toast({
+        title: "Failed to update notifications",
+        description: err instanceof Error ? err.message : "Please try again",
+        variant: "destructive"
+      });
+    } finally {
+      setUpdating(false);
+    }
+  };
+
+  const handleMarkRead = async (id: string) => {
+    setUpdating(true);
+    try {
+      await markNotificationRead(id);
+    } catch (err) {
+      toast({
+        title: "Failed to update notification",
+        description: err instanceof Error ? err.message : "Please try again",
+        variant: "destructive"
+      });
+    } finally {
+      setUpdating(false);
+    }
+  };
 
   return (
     <Popover>
@@ -25,19 +58,23 @@ const NotificationPanel = () => {
         <div className="flex items-center justify-between border-b border-border p-3">
           <h3 className="font-display font-semibold text-foreground">Notifications</h3>
           {unreadCount > 0 && (
-            <Button variant="ghost" size="sm" className="text-xs" onClick={markAllNotificationsRead}>
+            <Button variant="ghost" size="sm" className="text-xs" onClick={handleMarkAll} disabled={updating}>
               <Check className="h-3 w-3 mr-1" /> Mark all read
             </Button>
           )}
         </div>
         <div className="max-h-80 overflow-y-auto">
-          {notifications.length === 0 ? (
+          {loading ? (
+            <p className="p-4 text-sm text-muted-foreground text-center">Loading notifications...</p>
+          ) : error ? (
+            <p className="p-4 text-sm text-destructive text-center">{error}</p>
+          ) : notifications.length === 0 ? (
             <p className="p-4 text-sm text-muted-foreground text-center">No notifications</p>
           ) : (
             notifications.map(n => (
               <button
                 key={n.id}
-                onClick={() => markNotificationRead(n.id)}
+                onClick={() => handleMarkRead(n.id)}
                 className={`flex w-full gap-3 p-3 text-left border-b border-border last:border-0 transition-colors hover:bg-muted ${!n.read ? "bg-primary/5" : ""}`}
               >
                 <div className={`mt-0.5 flex h-8 w-8 shrink-0 items-center justify-center rounded-full ${n.type === "inactive" ? "bg-inactive/10" : "bg-neutral/10"}`}>

@@ -4,16 +4,28 @@ import { GraduationCap, Mail, Lock, Eye, EyeOff } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
+import { useAuth } from "@/context/AuthContext";
+import { toast } from "@/hooks/use-toast";
 
 const Login = () => {
   const navigate = useNavigate();
+  const { login, loading } = useAuth();
   const [showPassword, setShowPassword] = useState(false);
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
 
-  const handleLogin = (e: React.FormEvent) => {
+  const handleLogin = async (e: React.FormEvent) => {
     e.preventDefault();
-    navigate("/dashboard");
+    try {
+      await login(email, password);
+      navigate("/dashboard");
+    } catch (err) {
+      toast({
+        title: "Login failed",
+        description: err instanceof Error ? err.message : "Please check your credentials",
+        variant: "destructive"
+      });
+    }
   };
 
   return (
@@ -86,8 +98,8 @@ const Login = () => {
               </div>
             </div>
 
-            <Button type="submit" className="w-full h-11 font-semibold">
-              Sign In
+            <Button type="submit" className="w-full h-11 font-semibold" disabled={loading}>
+              {loading ? "Signing In..." : "Sign In"}
             </Button>
           </form>
 

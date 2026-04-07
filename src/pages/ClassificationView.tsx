@@ -14,7 +14,7 @@ const classColors: Record<string, string> = {
 const ClassificationView = () => {
   const { classification } = useParams<{ classification: string }>();
   const navigate = useNavigate();
-  const { students } = useStudentStore();
+  const { students, loading, error } = useStudentStore();
 
   const filteredByClassification = classification === "all"
     ? students
@@ -28,7 +28,7 @@ const ClassificationView = () => {
   return (
     <div className="space-y-6">
       <div className="flex items-center gap-4">
-        <Button variant="ghost" size="icon" onClick={() => navigate("/dashboard")}>
+        <Button variant="ghost" size="icon" onClick={() => navigate("/dashboard")}> 
           <ArrowLeft className="h-5 w-5" />
         </Button>
         <div>
@@ -40,6 +40,9 @@ const ClassificationView = () => {
           </p>
         </div>
       </div>
+
+      {loading && <p className="text-sm text-muted-foreground">Loading students...</p>}
+      {error && <p className="text-sm text-destructive">{error}</p>}
 
       <div className="grid grid-cols-1 gap-3 sm:grid-cols-2 lg:grid-cols-3">
         {deptCounts.map((dept) => (

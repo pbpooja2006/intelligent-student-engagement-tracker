@@ -4,10 +4,12 @@ import { Button } from "@/components/ui/button";
 import { useState } from "react";
 import NotificationPanel from "@/components/NotificationPanel";
 import EducatorProfile from "./EducatorProfileCard";
+import { useAuth } from "@/context/AuthContext";
 
 const DashboardLayout = () => {
   const navigate = useNavigate();
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
+  const { logout } = useAuth();
 
   return (
     <div className="min-h-screen bg-background">
@@ -41,7 +43,14 @@ const DashboardLayout = () => {
             <Link to="/dashboard" className="flex items-center gap-2 rounded-lg px-3 py-2 text-sm hover:bg-muted" onClick={() => setMobileMenuOpen(false)}>
               <LayoutDashboard className="h-4 w-4" /> Dashboard
             </Link>
-            <button className="flex w-full items-center gap-2 rounded-lg px-3 py-2 text-sm text-destructive hover:bg-muted" onClick={() => { navigate("/login"); setMobileMenuOpen(false); }}>
+            <button
+              className="flex w-full items-center gap-2 rounded-lg px-3 py-2 text-sm text-destructive hover:bg-muted"
+              onClick={() => {
+                logout();
+                navigate("/login");
+                setMobileMenuOpen(false);
+              }}
+            >
               <LogOut className="h-4 w-4" /> Sign Out
             </button>
           </div>

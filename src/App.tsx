@@ -12,30 +12,33 @@ import StudentList from "./pages/StudentList";
 import StudentProfile from "./pages/StudentProfile";
 import DashboardLayout from "./components/DashboardLayout";
 import NotFound from "./pages/NotFound";
+import { AuthProvider } from "./context/AuthContext";
 
 const queryClient = new QueryClient();
 
 const App = () => (
   <QueryClientProvider client={queryClient}>
-    <TooltipProvider>
-      <Toaster />
-      <Sonner />
-      <BrowserRouter>
-        <Routes>
-          <Route path="/" element={<Navigate to="/login" replace />} />
-          <Route path="/login" element={<Login />} />
-          <Route path="/signup" element={<Signup />} />
-          <Route element={<DashboardLayout />}>
-            <Route path="/dashboard" element={<Dashboard />} />
-            <Route path="/dashboard/classification/:classification" element={<ClassificationView />} />
-            <Route path="/dashboard/classification/:classification/department/:department" element={<DepartmentView />} />
-            <Route path="/dashboard/classification/:classification/department/:department/year/:year" element={<StudentList />} />
-            <Route path="/dashboard/student/:studentId" element={<StudentProfile />} />
-          </Route>
-          <Route path="*" element={<NotFound />} />
-        </Routes>
-      </BrowserRouter>
-    </TooltipProvider>
+    <AuthProvider>
+      <TooltipProvider>
+        <Toaster />
+        <Sonner />
+        <BrowserRouter>
+          <Routes>
+            <Route path="/" element={<Navigate to="/login" replace />} />
+            <Route path="/login" element={<Login />} />
+            <Route path="/signup" element={<Signup />} />
+            <Route element={<DashboardLayout />}>
+              <Route path="/dashboard" element={<Dashboard />} />
+              <Route path="/dashboard/classification/:classification" element={<ClassificationView />} />
+              <Route path="/dashboard/classification/:classification/department/:department" element={<DepartmentView />} />
+              <Route path="/dashboard/classification/:classification/department/:department/year/:year" element={<StudentList />} />
+              <Route path="/dashboard/student/:studentId" element={<StudentProfile />} />
+            </Route>
+            <Route path="*" element={<NotFound />} />
+          </Routes>
+        </BrowserRouter>
+      </TooltipProvider>
+    </AuthProvider>
   </QueryClientProvider>
 );
 
