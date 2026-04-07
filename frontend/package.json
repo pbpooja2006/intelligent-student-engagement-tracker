@@ -163,7 +163,6 @@
     "lodash.merge": "^4.6.2",
     "loose-envify": "^1.4.0",
     "loupe": "^3.2.1",
-    "lovable-tagger": "^1.1.13",
     "lucide-react": "^0.462.0",
     "lz-string": "^1.5.0",
     "magic-string": "^0.30.21",
@@ -304,12 +303,11 @@
     "yocto-queue": "^0.1.0",
     "zod": "^3.25.76"
   },
-  "devDependencies": {},
   "scripts": {
-  "dev": "vite",
-  "build": "vite build",
-  "preview": "vite preview"
-},
+    "dev": "vite",
+    "build": "vite build",
+    "preview": "vite preview"
+  },
   "repository": {
     "type": "git",
     "url": "git+https://github.com/pbpooja2006/intelligent-student-engagement-tracker.git"
